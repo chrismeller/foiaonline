@@ -26,7 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FoiaOnline.Client\FoiaOnline.Client.csproj" />
     <ProjectReference Include="..\FoiaOnline.Data\FoiaOnline.Data.csproj" />
+    <ProjectReference Include="..\FoiaOnline.Domain\FoiaOnline.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DTOs\" />
   </ItemGroup>
 
 </Project>

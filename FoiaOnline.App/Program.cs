@@ -1,5 +1,7 @@
 ﻿using FoiaOnline.App;
+using FoiaOnline.Client;
 using FoiaOnline.Data;
+using FoiaOnline.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,9 @@ using var host = Host.CreateDefaultBuilder(args)
 
         services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(hostContext.Configuration.GetConnectionString("ApplicationDbContext")));
+
+        services.AddSingleton<RequestService>();
+        services.AddSingleton<FoiaClient>();
 
     })
     .Build();
