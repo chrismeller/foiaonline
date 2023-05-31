@@ -1,4 +1,4 @@
-﻿namespace FoiaOnline.App.DTOs;
+﻿namespace FoiaOnline.Client.DTOs;
 
 public class TokenCookie
 {

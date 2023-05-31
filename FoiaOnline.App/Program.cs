@@ -22,3 +22,5 @@ using var host = Host.CreateDefaultBuilder(args)
 
     })
     .Build();
+
+await host.StartAsync();
