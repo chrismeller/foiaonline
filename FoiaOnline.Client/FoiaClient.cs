@@ -36,7 +36,7 @@ public class FoiaClient
         var json = JsonSerializer.Serialize(new SearchRequest
         {
             draw = 1,
-            numberOfRecords = 100,
+            numberOfRecords = 1000,
             lastItemDisplayed = offset,
             toOrganizationIncludeSubAgencies = true,
             receivedDateFrom = startDate.ToString("yyyy-MM-dd"),
