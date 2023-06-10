@@ -24,20 +24,24 @@ public class App : IHostedService
 
         if (lastRequestDate == null)
         {
-            lastRequestDate = new DateTime(2022, 1, 1);
+            lastRequestDate = new DateTime(2005, 1, 1);
         }
+
 
         var keepGoing = true;
         do
         {
+            var fromDate = lastRequestDate.Value;
+            var toDate = lastRequestDate.Value.AddMonths(1).AddDays(-1);
+
             var offset = 0;
             var keepGoingPages = true;
             do
             {
-                _logger.LogInformation($"Getting requests for {lastRequestDate.Value:yyyy-MM-dd} to {lastRequestDate.Value.AddDays(7):yyyy-MM-dd} at offset {offset}");
+                _logger.LogInformation($"Getting requests for {fromDate:yyyy-MM-dd} to {toDate:yyyy-MM-dd} at offset {offset}");
 
                 var requests =
-                    await _client.GetSearchResult(lastRequestDate.Value, lastRequestDate.Value.AddDays(7), offset);
+                    await _client.GetSearchResult(fromDate, toDate, offset);
 
                 _logger.LogInformation($"Got {requests.data.Length} requests");
                 _logger.LogInformation($"There are {requests.recordsTotal} total records.");
@@ -66,12 +70,14 @@ public class App : IHostedService
                     //}
                 }
 
+                offset = offset + requests.data.Length;
+
                 if (offset >= requests.recordsTotal)
                 {
                     keepGoingPages = false;
                 }
 
-                offset = offset + requests.data.Length;
+                
 
                 Thread.Sleep(1000);
             } while (keepGoingPages);
@@ -81,7 +87,7 @@ public class App : IHostedService
                 keepGoing = false;
             }
 
-            lastRequestDate = lastRequestDate.Value.AddDays(7);
+            lastRequestDate = toDate.AddDays(1);
 
         } while (keepGoing);
 
