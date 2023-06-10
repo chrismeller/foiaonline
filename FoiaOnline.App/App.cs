@@ -1,4 +1,5 @@
 ﻿using FoiaOnline.Client;
+using FoiaOnline.Data.Models;
 using FoiaOnline.Domain;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ public class App : IHostedService
         do
         {
             var fromDate = lastRequestDate.Value;
-            var toDate = lastRequestDate.Value.AddMonths(1).AddDays(-1);
+            var toDate = lastRequestDate.Value.AddDays(7);
 
             var offset = 0;
             var keepGoingPages = true;
@@ -46,11 +47,26 @@ public class App : IHostedService
                 _logger.LogInformation($"Got {requests.data.Length} requests");
                 _logger.LogInformation($"There are {requests.recordsTotal} total records.");
 
-                var requestsToSave = requests.data.ToDictionary(x => x.trackingNumber, x => lastRequestDate.Value);
+                //var requestsToSave = requests.data.ToDictionary(x => x.trackingNumber, x => lastRequestDate.Value);
+                var requestsToSave = requests.data.Select(x => new FoundRequest
+                {
+                    TrackingNumber = x.trackingNumber,
+                    SearchDate = fromDate,
+                    ReceiveDate = x.received,
+                    Agency = x.agency,
+                    CloseDate = x.closedDate,
+                    Description = x.description,
+                    DueDate = x.due,
+                    ExemptionsUsed = x.exemptionsUsed,
+                    FinalDisposition = x.finalDisposition,
+                    ReportingYear = x.reportingYear,
+                    Requester = x.requester,
+                    IsScraped = false,
+                }).ToList();
 
                 await _service.LogFoundRequests(requestsToSave);
 
-                _logger.LogInformation($"Saved {requestsToSave.Count} requests");
+                _logger.LogInformation($"Saved {requestsToSave.Count()} requests");
 
                 //foreach (var request in requests.data)
                 //{
@@ -87,7 +103,7 @@ public class App : IHostedService
                 keepGoing = false;
             }
 
-            lastRequestDate = toDate.AddDays(1);
+            lastRequestDate = toDate;
 
         } while (keepGoing);
 

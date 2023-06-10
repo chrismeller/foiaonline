@@ -28,16 +28,9 @@ public class RequestService
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task LogFoundRequests(Dictionary<string, DateTime> foundRequests)
+    public async Task LogFoundRequests(IEnumerable<FoundRequest> foundRequests)
     {
-        var entities = foundRequests.Select(x => new FoundRequest
-        {
-            TrackingNumber = x.Key,
-            SearchDate = x.Value,
-            IsScraped = false,
-        });
-
-        await _dbContext.BulkInsertOrUpdateAsync(entities);
+        await _dbContext.BulkInsertOrUpdateAsync(foundRequests);
     }
 
     public async Task<DateTime?> GetLastFoundRequestDate()
