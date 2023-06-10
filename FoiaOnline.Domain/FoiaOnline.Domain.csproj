@@ -12,4 +12,8 @@
     <ProjectReference Include="..\FoiaOnline.Data\FoiaOnline.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="EFCore.BulkExtensions" Version="7.1.2" />
+  </ItemGroup>
+
 </Project>

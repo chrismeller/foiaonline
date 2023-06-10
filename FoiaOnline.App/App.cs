@@ -46,29 +46,29 @@ public class App : IHostedService
                 _logger.LogInformation($"Got {requests.data.Length} requests");
                 _logger.LogInformation($"There are {requests.recordsTotal} total records.");
 
-                //var requestsToSave = requests.data.ToDictionary(x => x.trackingNumber, x => lastRequestDate.Value);
+                var requestsToSave = requests.data.ToDictionary(x => x.trackingNumber, x => lastRequestDate.Value);
 
-                //await _service.LogFoundRequests(requestsToSave);
+                await _service.LogFoundRequests(requestsToSave);
 
-                //_logger.LogInformation($"Saved {requestsToSave.Count} requests");
+                _logger.LogInformation($"Saved {requestsToSave.Count} requests");
 
-                foreach (var request in requests.data)
-                {
-                    _logger.LogDebug($"Logging request {request.trackingNumber} as found.");
+                //foreach (var request in requests.data)
+                //{
+                //    _logger.LogDebug($"Logging request {request.trackingNumber} as found.");
 
-                    await _service.LogFoundRequest(request.trackingNumber, lastRequestDate.Value);
+                //    await _service.LogFoundRequest(request.trackingNumber, lastRequestDate.Value);
 
-                    //await Console.Out.WriteAsync($"Getting files for request {request.trackingNumber}... ");
+                //    //await Console.Out.WriteAsync($"Getting files for request {request.trackingNumber}... ");
 
-                    //var files = await _client.GetRequestFiles(request.trackingNumber);
+                //    //var files = await _client.GetRequestFiles(request.trackingNumber);
 
-                    //await Console.Out.WriteLineAsync($"Got {files.data.Length}");
+                //    //await Console.Out.WriteLineAsync($"Got {files.data.Length}");
 
-                    //if (files.data.Any())
-                    //{
+                //    //if (files.data.Any())
+                //    //{
 
-                    //}
-                }
+                //    //}
+                //}
 
                 offset = offset + requests.data.Length;
 

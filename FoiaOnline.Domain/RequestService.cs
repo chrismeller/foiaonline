@@ -1,4 +1,5 @@
-﻿using FoiaOnline.Data;
+﻿using EFCore.BulkExtensions;
+using FoiaOnline.Data;
 using FoiaOnline.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,22 +30,14 @@ public class RequestService
 
     public async Task LogFoundRequests(Dictionary<string, DateTime> foundRequests)
     {
-        //var existing =
-        //    await _dbContext.FoundRequests.Where(x => foundRequests.Keys.Contains(x.TrackingNumber))
-        //        .ToListAsync();
-
-        //var toCreate = foundRequests.Where(x => existing.Select(e => e.TrackingNumber).Contains(x.Key) == false)
-        //    .Select(x => new FoundRequest());
-
-        //await _dbContext.FoundRequests.AddRangeAsync()
-        await _dbContext.Database.BeginTransactionAsync();
-
-        foreach (var request in foundRequests)
+        var entities = foundRequests.Select(x => new FoundRequest
         {
-            await LogFoundRequest(request.Key, request.Value);
-        }
+            TrackingNumber = x.Key,
+            SearchDate = x.Value,
+            IsScraped = false,
+        });
 
-        await _dbContext.Database.CommitTransactionAsync();
+        await _dbContext.BulkInsertOrUpdateAsync(entities);
     }
 
     public async Task<DateTime?> GetLastFoundRequestDate()
