@@ -1,0 +1,72 @@
+version: '3.4'
+
+volumes:
+  db_data:
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - 1433:1433
+    restart: unless-stopped
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Microsoft2023!
+      - MSSQL_PID=Developer
+      - TZ=Utc
+    volumes:
+      - type: volume
+        source: db_data
+        target: /var/opt/mssql
+    hostname: db
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    restart: on-failure
+    environment:
+      - DB_HOST=db
+      # must be in double quotes to appease the T-SQL gods
+      - DB_NAME="FoiaOnline"
+      - SA_PASSWORD=Microsoft2023!
+    command: >
+      bash -c '/opt/mssql-tools/bin/sqlcmd -S $$DB_HOST -U sa -P $$SA_PASSWORD -b -Q "
+      IF NOT EXISTS ( SELECT * FROM sys.databases WHERE name = $$DB_NAME )
+      BEGIN
+        CREATE DATABASE [$$DB_NAME];
+      END
+      "'
+    depends_on:
+      db:
+        condition: service_started
+
+  migrations:
+    image: ghcr.io/chrismeller/foiaonline:main
+    build: ./
+    environment:
+      - CUSTOMCONNSTR_ApplicationDbContext=Server=db;Database=FoiaOnline;User Id=sa;Password=Microsoft2023!;
+      - DOTNET_ENVIRONMENT=Production
+      - DOTNET_BUNDLE_EXTRACT_BASE_DIR=/tmp
+      - TZ=Utc
+    restart: "no"
+    command: sh -c ./efbundle.exe --connection $$CUSTOMCONNSTR_ApplicationDbContext
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+
+  app:
+    image: ghcr.io/chrismeller/scalcohollicenses:main
+    build: ./
+    environment:
+      - CUSTOMCONNSTR_ApplicationDbContext=Server=db;Database=FoiaOnline;User Id=sa;Password=Microsoft2023!;
+      - DOTNET_ENVIRONMENT=Production
+      - TZ=Utc
+    env_file:
+      - .env
+    restart: on-failure
+    # security_opt:
+    #   - "seccomp=seccomp_profile.json"
+    depends_on:
+      db:
+        condition: service_started
+      migrations:
+          condition: service_completed_successfully
