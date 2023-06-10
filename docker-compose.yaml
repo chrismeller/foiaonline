@@ -60,8 +60,8 @@ services:
       - CUSTOMCONNSTR_ApplicationDbContext=Server=db;Database=FoiaOnline;User Id=sa;Password=Microsoft2023!;
       - DOTNET_ENVIRONMENT=Production
       - TZ=Utc
-    env_file:
-      - .env
+    # env_file:
+    #   - .env
     restart: on-failure
     # security_opt:
     #   - "seccomp=seccomp_profile.json"
