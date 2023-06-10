@@ -54,7 +54,7 @@ services:
         condition: service_completed_successfully
 
   app:
-    image: ghcr.io/chrismeller/scalcohollicenses:main
+    image: ghcr.io/chrismeller/foiaonline:main
     build: ./
     environment:
       - CUSTOMCONNSTR_ApplicationDbContext=Server=db;Database=FoiaOnline;User Id=sa;Password=Microsoft2023!;
