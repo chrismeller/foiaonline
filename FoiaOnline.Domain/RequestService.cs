@@ -30,7 +30,8 @@ public class RequestService
 
     public async Task LogFoundRequests(IEnumerable<FoundRequest> foundRequests)
     {
-        await _dbContext.BulkInsertOrUpdateAsync(foundRequests);
+        await _dbContext.BulkInsertOrUpdateAsync(foundRequests,
+            config => config.PropertiesToIncludeOnCompare = new List<string>() { "TrackingNumber" });
     }
 
     public async Task<DateTime?> GetLastFoundRequestDate()

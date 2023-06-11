@@ -64,6 +64,14 @@ public class App : IHostedService
                     IsScraped = false,
                 }).ToList();
 
+                var duplicates = requestsToSave.GroupBy(x => x.TrackingNumber).Where(x => x.Count() > 1).ToList();
+
+                foreach (var duplicate in duplicates)
+                {
+                    // remove the first one
+                    requestsToSave.Remove(duplicate.First());
+                }
+
                 await _service.LogFoundRequests(requestsToSave);
 
                 _logger.LogInformation($"Saved {requestsToSave.Count()} requests");
